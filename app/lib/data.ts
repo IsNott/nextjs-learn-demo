@@ -9,6 +9,7 @@ import {
   Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
+import { log } from 'console';
 
 export async function fetchRevenue() {
   // Add noStore() here to prevent the response from being cached.
@@ -18,12 +19,12 @@ export async function fetchRevenue() {
     // Artificially delay a response for demo purposes.
     // Don't do this in production :)
 
-    // console.log('Fetching revenue data...');
+    console.log('Fetching revenue data...');
     // await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const data = await sql<Revenue>`SELECT * FROM revenue`;
 
-    // console.log('Data fetch completed after 3 seconds.');
+    console.log('Data fetch :',data.rows);
 
     return data.rows;
   } catch (error) {
@@ -45,6 +46,7 @@ export async function fetchLatestInvoices() {
       ...invoice,
       amount: formatCurrency(invoice.amount),
     }));
+    console.log("lastest Invoies:",latestInvoices)
     return latestInvoices;
   } catch (error) {
     console.error('Database Error:', error);
@@ -64,6 +66,7 @@ export async function fetchCardData() {
          SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
          FROM invoices`;
 
+    // use Promise.all\allSelected() can do many requets at the same time 
     const data = await Promise.all([
       invoiceCountPromise,
       customerCountPromise,
@@ -75,12 +78,19 @@ export async function fetchCardData() {
     const totalPaidInvoices = formatCurrency(data[2].rows[0].paid ?? '0');
     const totalPendingInvoices = formatCurrency(data[2].rows[0].pending ?? '0');
 
+    // console.log('numberOfCustomers:',numberOfCustomers);
+    // console.log('numberOfInvoices:',numberOfInvoices);
+    // console.log('totalPaidInvoices:',totalPaidInvoices);
+    // console.log('totalPendingInvoices:',totalPendingInvoices);
+
     return {
       numberOfCustomers,
       numberOfInvoices,
       totalPaidInvoices,
       totalPendingInvoices,
     };
+    
+    
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch card data.');
