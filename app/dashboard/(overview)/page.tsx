@@ -4,7 +4,10 @@ import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
 import { lusitana } from '@/app/ui/fonts';
 import { RevenueChartSkeleton,LatestInvoicesSkeleton,CardsSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';
- 
+import { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Overview',
+}
 export default async function Page() {
     // 这里请求数据会导致request waterfall fetchRevenue请求完才请求fetchLatestInvoices，
     // 当数据没关联性时可以使用await Promise.all()异步查询多个请求
